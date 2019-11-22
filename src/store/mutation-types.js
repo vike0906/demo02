@@ -1,0 +1,2 @@
+//侧边栏收放
+export const ASIDEBAR_COLLAPSE = 'ASIDEBAR_COLLAPSE';
