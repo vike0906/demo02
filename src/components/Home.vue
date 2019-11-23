@@ -2,7 +2,7 @@
  <a-layout id="home">
       <a-layout-header><Header/></a-layout-header>
       <a-layout id="home-body">
-        <a-layout-sider :trigger="null" collapsible v-model="collapsed" class="ant-layout-sider-light">Sider</a-layout-sider>
+        <a-layout-sider :trigger="null" collapsible v-model="collapsed" class="ant-layout-sider-light"><Asidebar/></a-layout-sider>
         <a-layout-content>
           <a-layout style="height: 100%;">
           <a-layout-content>Content</a-layout-content>
@@ -17,12 +17,12 @@
 
 <script>
 import Header from "./layout/Header";
-// import Asidebar from "./layout/Asidebar";
+import Asidebar from "./layout/Asidebar";
 // import Main from "./Main";
 
 export default {
   components: {
-    Header
+    Header, Asidebar
     // ,Asidebar,Main
   },
   // data() {
@@ -46,6 +46,7 @@ export default {
   box-shadow:0 0 5px #75797d;
   z-index: 1050;
 }
+
 #home-body {
   position: absolute;
   top: 3.6rem;
@@ -70,5 +71,10 @@ export default {
     background-color: #fff;
     height: 100%;
     width: 100%;
+}
+@media only screen and (max-width:639px){
+  #home .ant-layout-sider{
+    display: none;
+  }
 }
 </style>
