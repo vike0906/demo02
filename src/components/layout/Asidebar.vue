@@ -1,13 +1,13 @@
 <template>
+<!-- :defaultSelectedKeys="['1']"
+      :defaultOpenKeys="['sub1']" -->
 <a-menu
-      :defaultSelectedKeys="['1']"
-      :defaultOpenKeys="['sub1']"
       mode="inline"
       :inlineCollapsed="collapsed"
     >
       <a-sub-menu key="sub1">
         <span slot="title"><a-icon type="stock" /><span>股票行情</span></span>
-        <a-menu-item key="1">A股汇总</a-menu-item>
+        <a-menu-item key="1" ><router-link to="/stock-base">A股汇总</router-link></a-menu-item>
         <a-menu-item key="2">龙虎榜</a-menu-item>
       </a-sub-menu>
       <a-sub-menu key="sub2">
@@ -31,14 +31,16 @@ export default {
 <style>
 .ant-menu{
   text-align: left;
-  font-size: 1.5rem;
-  z-index: 1055;
 }
-.a-icon{
-  font-size: 1.5rem;
+.ant-menu-inline .ant-menu-submenu-title {
+  font-size: 1rem;
 }
-.ant-menu-submenu-title{
-  font-size: 1.5rem;
+.ant-menu-submenu-title .anticon{
+  font-size: 1.2rem;
 }
+.ant-menu-inline-collapsed > .ant-menu-submenu > .ant-menu-submenu-title .anticon{
+  font-size: 1.2rem;
+}
+
 
 </style>

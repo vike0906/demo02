@@ -24,29 +24,30 @@
           <a-avatar style="backgroundColor:#87d068" icon="user" />
           <div class="draw-down">
             <span style="font-size:1.1rem; margin:0 .5rem 0 .5rem;">admin</span>
-          <a-icon type="down" />
+            <a-icon type="down" />
           </div>
         </div>
         <div class="mask" v-if="showHeadMenu" @click="changeHeadMenu()"></div>
-        <transition name="bounce" >
-        <div class="head-menu" v-if="showHeadMenu" @click="changeHeadMenu()">
-          <a-menu slot="overlay">
-            <a-menu-item>
-              <a-icon type="user"/>
-              <span>主页</span>
-            </a-menu-item>
-            <a-menu-item>
-              <a-icon type="edit"/>
-              <span>修改密码</span>
-            </a-menu-item>
-            <a-menu-item>
-              <a-icon type="poweroff"/>
-              <span>推出登录</span>
-            </a-menu-item>
-          </a-menu>
-        </div>
+        <transition name="bounce">
+          <div class="head-menu" v-if="showHeadMenu" @click="changeHeadMenu()">
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <router-link to="/">
+                <a-icon type="user" />
+                <span>首页</span>
+                </router-link>
+              </a-menu-item>
+              <a-menu-item>
+                <a-icon type="edit" />
+                <span>修改密码</span>
+              </a-menu-item>
+              <a-menu-item>
+                <a-icon type="poweroff" />
+                <span>推出登录</span>
+              </a-menu-item>
+            </a-menu>
+          </div>
         </transition>
-        
       </a-col>
     </a-row>
   </div>
@@ -56,7 +57,7 @@
 export default {
   data() {
     return {
-      showHeadMenu:false
+      showHeadMenu: false
     };
   },
   computed: {
@@ -66,18 +67,27 @@ export default {
   },
   methods: {
     changeAsidebar: function() {
-      this.$store.commit("ASIDEBAR_COLLAPSE");
+      let screenSize = this.$store.getters.getScreenSize;
+      let asidebarCollapse = this.$store.getters.getAsidebarCollapse;
+      if (screenSize <= 639) {
+        if(asidebarCollapse){
+          this.$store.commit("ASIDEBAR_COLLAPSE");
+        }
+        this.$store.commit("SIDER_SHOW");
+      } else {
+        this.$store.commit("ASIDEBAR_COLLAPSE");
+      }
     },
-    changeHeadMenu: function(){
-      this.showHeadMenu = this.showHeadMenu?false:true;
+    changeHeadMenu: function() {
+      this.showHeadMenu = this.showHeadMenu ? false : true;
     }
   }
 };
 </script>
 <style scoped>
-@import '../../assets/style/fade.css';
+@import "../../assets/style/fade.css";
 .head-trigger {
-  font-size: 1.3rem;
+  font-size: 1.1rem;
   line-height: 3.6rem;
   padding: 0.3rem 0.8rem 0 1rem;
   cursor: pointer;
@@ -120,20 +130,20 @@ export default {
   box-shadow: 0 0 3px #75797d;
   z-index: 1050;
 }
-.ant-menu-item{
+.ant-menu-item {
   text-align: left;
   margin-bottom: 0;
 }
-.ant-menu-item:hover{
+.ant-menu-item:hover {
   background-color: #eae3e3;
 }
 .bounce-enter-active {
-  animation: flipInX .2s;
+  animation: flipInX 0.2s;
 }
 .bounce-leave-active {
-  animation: flipInX .2s reverse;
+  animation: flipInX 0.2s reverse;
 }
-.mask{
+.mask {
   position: fixed;
   top: 0;
   left: 0;
@@ -141,14 +151,13 @@ export default {
   height: 100%;
   z-index: 1049;
 }
-.draw-down{
+.draw-down {
   display: flex;
   align-items: center;
 }
-@media only screen and (max-width:639px){
-  .draw-down{
+@media only screen and (max-width: 639px) {
+  .draw-down {
     display: none;
   }
 }
-
 </style>
