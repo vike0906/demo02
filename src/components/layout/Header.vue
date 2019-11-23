@@ -6,6 +6,7 @@
           <a-icon
             class="head-trigger"
             :type="collapsed ? 'menu-unfold' : 'menu-fold'"
+            style="z-index:1051"
             @click="changeAsidebar()"
           ></a-icon>
           <a-avatar :size="25" src="./static/logo.png" />
@@ -21,24 +22,31 @@
       >
         <div class="head-info" @click="changeHeadMenu()">
           <a-avatar style="backgroundColor:#87d068" icon="user" />
-          <span style="font-size:1.1rem; margin:0 .5rem 0 .5rem;">admin</span>
+          <div class="draw-down">
+            <span style="font-size:1.1rem; margin:0 .5rem 0 .5rem;">admin</span>
           <a-icon type="down" />
+          </div>
         </div>
+        <div class="mask" v-if="showHeadMenu" @click="changeHeadMenu()"></div>
         <transition name="bounce" >
-        <div class="head-menu" v-if="showHeadMenu">
+        <div class="head-menu" v-if="showHeadMenu" @click="changeHeadMenu()">
           <a-menu slot="overlay">
             <a-menu-item>
-              <a href="javascript:;">1st menu item</a>
+              <a-icon type="user"/>
+              <span>主页</span>
             </a-menu-item>
             <a-menu-item>
-              <a href="javascript:;">2nd menu item</a>
+              <a-icon type="edit"/>
+              <span>修改密码</span>
             </a-menu-item>
             <a-menu-item>
-              <a href="javascript:;">3rd menu item</a>
+              <a-icon type="poweroff"/>
+              <span>推出登录</span>
             </a-menu-item>
           </a-menu>
         </div>
         </transition>
+        
       </a-col>
     </a-row>
   </div>
@@ -112,14 +120,35 @@ export default {
   box-shadow: 0 0 3px #75797d;
   z-index: 1050;
 }
+.ant-menu-item{
+  text-align: left;
+  margin-bottom: 0;
+}
 .ant-menu-item:hover{
   background-color: #eae3e3;
 }
 .bounce-enter-active {
-  animation: flipInX .5s;
+  animation: flipInX .2s;
 }
 .bounce-leave-active {
-  animation: flipInX .5s reverse;
+  animation: flipInX .2s reverse;
+}
+.mask{
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1049;
+}
+.draw-down{
+  display: flex;
+  align-items: center;
+}
+@media only screen and (max-width:639px){
+  .draw-down{
+    display: none;
+  }
 }
 
 </style>
