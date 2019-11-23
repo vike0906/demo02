@@ -1,7 +1,7 @@
 <template>
   <div class="template">
     <a-row>
-      <a-col :span="4" style="text-align: left;padding: .5rem;">
+      <a-col :span="24" style="text-align: left;padding: .5rem;">
         <a-breadcrumb>
           <a-breadcrumb-item>首页</a-breadcrumb-item>
           <a-breadcrumb-item>股票市场</a-breadcrumb-item>
