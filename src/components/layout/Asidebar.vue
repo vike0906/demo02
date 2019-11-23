@@ -1,46 +1,44 @@
 <template>
-<el-menu default-active="1-4-1"  @open="handleOpen" @close="handleClose" :collapse="isCollapse"  :router=true>
-  <el-submenu index="1">
-    <template slot="title" class="title">
-      <i class="el-icon-s-marketing"></i>
-      <span slot="title">股票行情</span>
-    </template>
-    <el-menu-item index="1-1" route="/home/stock-base">A股汇总</el-menu-item>
-    <el-menu-item index="1-2" route="/home/stock-focus">龙虎榜</el-menu-item>
-  </el-submenu>
-  <el-submenu index="2">
-    <template slot="title" class="title">
-      <i class="el-icon-s-tools"></i>
-      <span slot="title">系统管理</span>
-    </template>
-    <el-menu-item index="2-1">用户管理</el-menu-item>
-      <el-menu-item index="2-2">角色管理</el-menu-item>
-      <el-menu-item index="2-3">权限管理</el-menu-item>
-  </el-submenu>
-</el-menu>
+<a-menu
+      :defaultSelectedKeys="['1']"
+      :defaultOpenKeys="['sub1']"
+      mode="inline"
+      :inlineCollapsed="collapsed"
+    >
+      <a-sub-menu key="sub1">
+        <span slot="title"><a-icon type="stock" /><span>股票行情</span></span>
+        <a-menu-item key="1">A股汇总</a-menu-item>
+        <a-menu-item key="2">龙虎榜</a-menu-item>
+      </a-sub-menu>
+      <a-sub-menu key="sub2">
+        <span slot="title"><a-icon type="setting"/><span>系统管理</span></span>
+        <a-menu-item key="6">用户管理</a-menu-item>
+        <a-menu-item key="7">角色管理</a-menu-item>
+        <a-menu-item key="8">权限管理</a-menu-item>
+      </a-sub-menu>
+    </a-menu>
 </template>
 
 <script>
 export default {
-    methods: {
-      handleOpen(key, keyPath) {
-        console.log(key, keyPath);
-      },
-      handleClose(key, keyPath) {
-        console.log(key, keyPath);
-      }
-    },
     computed:{
-    isCollapse:function(){
-      return this.$store.getters.getAsidebarIsCollapse;
+    collapsed:function(){
+      return this.$store.getters.getAsidebarCollapse;
     }
   }
   }
 </script>
 <style>
-.el-menu{
-    text-align: left;
+.ant-menu{
+  text-align: left;
+  font-size: 1.5rem;
+  z-index: 1055;
 }
-
+.a-icon{
+  font-size: 1.5rem;
+}
+.ant-menu-submenu-title{
+  font-size: 1.5rem;
+}
 
 </style>
