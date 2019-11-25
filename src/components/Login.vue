@@ -10,11 +10,7 @@
       >
         <div class="login-content">
           <div style="display:inline">
-            <a-avatar
-              :size="20"
-              src="../../../static/four_color_logo.png"
-              style="vertical-align: middle;"
-            />
+            <a-avatar :size="25" src="../../../static/logo.png" style="vertical-align: middle;" />
             <span style="font-size:1.5rem;vertical-align: middle;">后台管理系统</span>
           </div>
           <h1 style="margin-top: 1.5rem;text-align: center;font-size: 2rem;">欢迎登陆</h1>
@@ -27,8 +23,18 @@
               :lg="{span: 12, offset:6}"
               :xl="{span: 10, offset:7}"
             >
-              <a-input class="login-name" v-model="loginName" @keyup.enter.native="login" placeholder="登陆名" />
-              <a-input-password class="login-password" v-model="password" @keyup.enter.native="login" placeholder="密码" />
+              <a-input
+                class="login-name"
+                v-model="loginName"
+                @keyup.enter.native="login"
+                placeholder="登陆名"
+              />
+              <a-input-password
+                class="login-password"
+                v-model="password"
+                @keyup.enter.native="login"
+                placeholder="密码"
+              />
               <a-button type="primary" class="login-summit" :loading="loading" @click="login">登陆</a-button>
             </a-col>
           </a-row>
@@ -38,7 +44,7 @@
   </div>
 </template>
 <script>
-import loginPost from '@/api/api'
+import * as api from "@/api/api";
 export default {
   data: function() {
     return {
@@ -62,30 +68,28 @@ export default {
       }
       this.loading = true;
       //访问后台，获取登录信息
-      let params = {'name':name,'password':password};
-      loginPost(params).then(
-          response=>{
-              this.loading = false;
-              if(response.date){
-                sessionStorage.setItem("user", JSON.stringify(response.date));
-                this.$router.push({ path: "/home" });
-              }
-          }
-      );
-    //   if (name == "admin" && password == "123456") {
-    //     this.loading = false;
-    //     let user = { name: "vike0906", token: "token" };
-    //     sessionStorage.setItem("user", JSON.stringify(user));
-    //     this.$router.push({ path: "/home" });
-    //   }else{
-    //       this.loading = false;
-    //       this.$message.error("用户名或密码错误");
-    //   }
-
-      // const that = this;
-      // setTimeout(function(){
-      //     that.loading = false;
-      //     },5000);
+      let params = { name: name, password: password };
+      // api.login(params)
+      //   .then(response => {
+      //     this.loading = false;
+      //     if (response) {
+      //       sessionStorage.setItem("user", JSON.stringify(response.data));
+      //       this.$router.push({ path: "/home" });
+      //     }
+      //   })
+      //   .catch(err => {
+      //     this.loading = false; //请求失败后的处理函数
+      //     console.log(err);
+      //   });
+        if (name == "admin" && password == "123456") {
+          this.loading = false;
+          let user = { name: "vike0906", token: "token" };
+          sessionStorage.setItem("user", JSON.stringify(user));
+          this.$router.push({ path: "/home" });
+        }else{
+            this.loading = false;
+            this.$message.error("用户名或密码错误");
+        }
     }
   }
 };

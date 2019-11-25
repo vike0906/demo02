@@ -48,6 +48,15 @@ li{
 input,img{  
     border: none;  
 }
+/* .ant-message-notice-content{
+    background-color: rgb(218, 176, 176);
+    width: 15rem;
+} */
+/* .ant-message-error{
+    background-color: red;
+    color: red;
+} */
+
 .nav-link-hover {
     position: relative;
     text-align: center; }

@@ -9,7 +9,7 @@
             style="z-index:1051"
             @click="changeAsidebar()"
           ></a-icon>
-          <a-avatar :size="25" src="../../../static/four_color_logo.png" />
+          <a-avatar :size="25" src="../../../static/logo.png" />
           <span class="head-title">后台管理系统</span>
         </div>
       </a-col>
@@ -23,7 +23,7 @@
         <div class="head-info" @click="changeHeadMenu()">
           <a-avatar style="backgroundColor:#87d068" icon="user" />
           <div class="draw-down">
-            <span style="font-size:1.1rem; margin:0 .5rem 0 .5rem;">admin</span>
+            <span style="font-size:1.1rem; margin:0 .5rem 0 .5rem;">{{userName}}</span>
             <a-icon type="down" />
           </div>
         </div>
@@ -63,6 +63,9 @@ export default {
     };
   },
   computed: {
+    userName: function(){
+      return JSON.parse(sessionStorage.getItem('user')).name;
+    },
     collapsed: function() {
       let screenSize = this.$store.getters.getScreenSize;
       if(screenSize<=639){
