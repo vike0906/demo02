@@ -32,7 +32,7 @@
           <div class="head-menu" v-if="showHeadMenu" @click="changeHeadMenu()">
             <a-menu slot="overlay">
               <a-menu-item>
-                <router-link to="/">
+                <router-link to="/home">
                 <a-icon type="user" />
                 <span>首页</span>
                 </router-link>
@@ -43,7 +43,7 @@
               </a-menu-item>
               <a-menu-item>
                 <a-icon type="poweroff" />
-                <span>推出登录</span>
+                <span>退出登录</span>
               </a-menu-item>
             </a-menu>
           </div>

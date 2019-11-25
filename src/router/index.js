@@ -9,7 +9,7 @@ export default new Router({
   mode: 'history',
   routes: [
     {
-      path: '/',
+      path: '/home',
       name: 'Home',
       component: Home,
       children:[{
@@ -20,8 +20,17 @@ export default new Router({
         component:()=>import('@/components/stock/StockBase')
       },{
         path:'stock-focus',
-        component:HelloWorld
-      }]
+        component:()=>import('@/components/stock/StockFocus')
+      },{
+        path:'system-user',
+        component:()=>import('@/components/system/User')
+      },{
+        path:'system-role',
+        component:()=>import('@/components/system/Role')
+      },{
+        path:'system-permission',
+        component:()=>import('@/components/system/Permission')
+      },]
     }
   ]
 })
