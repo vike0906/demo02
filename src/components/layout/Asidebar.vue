@@ -1,9 +1,10 @@
 <template>
 <!-- :defaultOpenKeys="[defaultKeys[0]]" -->
 <!-- :defaultSelectedKeys="[defaultKeys[1]]" -->
+<!-- :inlineCollapsed="collapsedHome" -->
 <a-menu
       mode="inline"
-      :inlineCollapsed="collapsed"
+      :inlineCollapsed="collapsedSide"
     >
       <a-sub-menu key="stock">
         <span slot="title"><a-icon type="stock" /><span>股票行情</span></span>
@@ -22,9 +23,9 @@
 <script>
 export default {
     computed:{
-    collapsed:function(){
-      return this.$store.getters.getAsidebarCollapse;
-    }
+      collapsedSide:function(){
+        return this.$store.getters.getAsidebarCollapse;
+      }
   }
   }
 </script>

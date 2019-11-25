@@ -9,7 +9,7 @@
             style="z-index:1051"
             @click="changeAsidebar()"
           ></a-icon>
-          <a-avatar :size="25" src="./static/logo.png" />
+          <a-avatar :size="25" src="../../../static/four_color_logo.png" />
           <span class="head-title">后台管理系统</span>
         </div>
       </a-col>
@@ -42,8 +42,10 @@
                 <span>修改密码</span>
               </a-menu-item>
               <a-menu-item>
+                <router-link to="/logout">
                 <a-icon type="poweroff" />
                 <span>退出登录</span>
+                </router-link>
               </a-menu-item>
             </a-menu>
           </div>
@@ -62,7 +64,12 @@ export default {
   },
   computed: {
     collapsed: function() {
-      return this.$store.getters.getAsidebarCollapse;
+      let screenSize = this.$store.getters.getScreenSize;
+      if(screenSize<=639){
+        return this.$store.getters.getSiderShow;
+      }else{
+        return this.$store.getters.getAsidebarCollapse;
+      }
     }
   },
   methods: {

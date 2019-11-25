@@ -1,12 +1,6 @@
 <template>
   <div class="template">
-    <a-row>
-      <a-col :span="24" style="text-align: left;padding: .5rem;">
-        <a-breadcrumb>
-          <a-breadcrumb-item>首页</a-breadcrumb-item>
-        </a-breadcrumb>
-      </a-col>
-    </a-row>
+    
     <div class="content">
       <a-row>
         <a-col :span="24">
@@ -25,7 +19,6 @@ export default {};
   width: 100%;
   height: 100%;
 }
-
 .welcome {
     margin-top: 3rem;
   text-align: center;
