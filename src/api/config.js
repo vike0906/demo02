@@ -22,10 +22,10 @@ service.interceptors.request.use(
       return config
     },
     error => {
-        message.error('请求出错', 2);
       // do something with request error
-      console.log(error) // for debug
-      return Promise.reject(error)
+      console.log(error); // for debug
+      message.error('请求出错', 2);
+      return Promise.reject(error);
     }
   )
   
@@ -44,11 +44,11 @@ service.interceptors.request.use(
     response => {
       const res = response.data
   
-      // if the custom code is not 20000, it is judged as an error.
+      // if the custom code is not 0, it is judged as an error.
       if (res.code !== 0) {
         message.error(res.message,2);
         // 10: Illegal token;
-        if (res.code === 10) {
+        if (res.code === 100) {
             message.error('当前登陆已失效，请重新登陆',2);
             sessionStorage.removeItem('user');
             setTimeout(function(){
@@ -67,7 +67,7 @@ service.interceptors.request.use(
       }else{
         message.error('服务器返回异常',2);
       }
-      return Promise.reject(error)
+      return Promise.reject(error);
     }
   )
   
