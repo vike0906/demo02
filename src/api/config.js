@@ -5,7 +5,7 @@ let baseURL = 'http://106.13.222.152:8084/api';
 
 const service = Axios.create({
     baseURL: baseURL,
-    timeout: 1000,
+    timeout: 10000,
     responseType: 'json',
     responseEncoding: 'utf8',
 });
