@@ -13,7 +13,7 @@ Vue.config.productionTip = false
 Vue.prototype.$message = message;
 Vue.prototype.$notification = notification;
 message.config({
-  top: `2rem`,
+  top: `1.5rem`,
   duration: 2,
   maxCount: 3,
 });

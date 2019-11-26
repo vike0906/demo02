@@ -11,7 +11,7 @@
         <div class="login-content">
           <div style="display:inline">
             <a-avatar :size="25" src="../../../static/logo.png" style="vertical-align: middle;" />
-            <span style="font-size:1.5rem;vertical-align: middle;">后台管理系统</span>
+            <span style="font-size:1.5rem;vertical-align: middle;">Market Information Platform</span>
           </div>
           <h1 style="margin-top: 1.5rem;text-align: center;font-size: 2rem;">欢迎登陆</h1>
           <p style="margin-top: .5rem;font-size:1rem;color:#5e7d8a;">在下方输入登录名和密码</p>
@@ -68,7 +68,7 @@ export default {
       }
       this.loading = true;
       //访问后台，获取登录信息
-      let params = { name: name, password: password };
+      // let params = { name: name, password: password };
       // api.login(params)
       //   .then(response => {
       //     this.loading = false;
@@ -81,6 +81,7 @@ export default {
       //     this.loading = false; //请求失败后的处理函数
       //     console.log(err);
       //   });
+      
         if (name == "admin" && password == "123456") {
           this.loading = false;
           let user = { name: "vike0906", token: "token" };

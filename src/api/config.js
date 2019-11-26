@@ -1,11 +1,12 @@
 import Axios from 'axios';
 import {message} from 'ant-design-vue';
+import {Modal} from 'ant-design-vue';
 
 let baseURL = 'http://106.13.222.152:8084/api';
 
 const service = Axios.create({
     baseURL: baseURL,
-    timeout: 10000,
+    timeout: 1000,
     responseType: 'json',
     responseEncoding: 'utf8',
 });
@@ -49,11 +50,19 @@ service.interceptors.request.use(
         message.error(res.message,2);
         // 10: Illegal token;
         if (res.code === 100) {
-            message.error('当前登陆已失效，请重新登陆',2);
-            sessionStorage.removeItem('user');
-            setTimeout(function(){
+            // message.error('当前登陆已失效，请重新登陆',2);
+            Modal.error({
+              title: '重新登陆',
+              content: '当前登陆已失效，请重新登陆',
+              onOk(){
+                sessionStorage.removeItem('user');
                 location.reload();
-            },2000);
+              }
+            });
+            // sessionStorage.removeItem('user');
+            // setTimeout(function(){
+            //     location.reload();
+            // },2000);
         }
         return Promise.reject(new Error(res.message || 'Error'))
       } else {

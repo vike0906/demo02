@@ -113,11 +113,11 @@ export default {
   background-color: #fff;
   padding: 0 1px;
   box-shadow: 0 0 5px #75797d;
-  z-index: 1050;
+  z-index: 100;
 }
 
 #home .ant-layout-sider{
-  z-index: 1049;
+  z-index: 99;
 }
 
 #home-body {
@@ -157,7 +157,7 @@ export default {
   left: 200px;
   width: 100%;
   height: 100%;
-  z-index: 1048;
+  z-index: 98;
   /* background-color: #f5f5f5; */
   background-color: #aaa;
   opacity:0.5;

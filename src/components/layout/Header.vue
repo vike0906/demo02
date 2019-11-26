@@ -9,8 +9,10 @@
             style="z-index:1051"
             @click="changeAsidebar()"
           ></a-icon>
-          <a-avatar :size="25" src="../../../static/logo.png" />
-          <span class="head-title">后台管理系统</span>
+          <!-- <router-link to="/home"> -->
+            <a-avatar :size="25" src="../../../static/logo.png" />
+            <span class="head-title">信息平台</span>
+          <!-- </router-link> -->
         </div>
       </a-col>
       <a-col
@@ -33,18 +35,18 @@
             <a-menu slot="overlay">
               <a-menu-item>
                 <router-link to="/home">
-                <a-icon type="user" />
-                <span>首页</span>
+                  <a-icon type="user" />
+                  <span>首页</span>
                 </router-link>
               </a-menu-item>
-              <a-menu-item>
+              <a-menu-item @click="changePwd">
                 <a-icon type="edit" />
                 <span>修改密码</span>
               </a-menu-item>
               <a-menu-item>
                 <router-link to="/logout">
-                <a-icon type="poweroff" />
-                <span>退出登录</span>
+                  <a-icon type="poweroff" />
+                  <span>退出登录</span>
                 </router-link>
               </a-menu-item>
             </a-menu>
@@ -56,6 +58,7 @@
 </template>
 
 <script>
+import { Modal } from "ant-design-vue";
 export default {
   data() {
     return {
@@ -63,14 +66,14 @@ export default {
     };
   },
   computed: {
-    userName: function(){
-      return JSON.parse(sessionStorage.getItem('user')).name;
+    userName: function() {
+      return JSON.parse(sessionStorage.getItem("user")).name;
     },
     collapsed: function() {
       let screenSize = this.$store.getters.getScreenSize;
-      if(screenSize<=639){
+      if (screenSize <= 639) {
         return this.$store.getters.getSiderShow;
-      }else{
+      } else {
         return this.$store.getters.getAsidebarCollapse;
       }
     }
@@ -80,7 +83,7 @@ export default {
       let screenSize = this.$store.getters.getScreenSize;
       let asidebarCollapse = this.$store.getters.getAsidebarCollapse;
       if (screenSize <= 639) {
-        if(asidebarCollapse){
+        if (asidebarCollapse) {
           this.$store.commit("ASIDEBAR_COLLAPSE");
         }
         this.$store.commit("SIDER_SHOW");
@@ -90,6 +93,12 @@ export default {
     },
     changeHeadMenu: function() {
       this.showHeadMenu = this.showHeadMenu ? false : true;
+    },
+    changePwd() {
+      Modal.info({
+        title: "提示",
+        content: "修改密码功能暂不开通"
+      });
     }
   }
 };
@@ -138,7 +147,7 @@ export default {
   height: 9rem;
   background-color: #fff;
   box-shadow: 0 0 3px #75797d;
-  z-index: 1050;
+  z-index: 100;
 }
 .ant-menu-item {
   text-align: left;
@@ -159,7 +168,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 1049;
+  z-index: 99;
 }
 .draw-down {
   display: flex;

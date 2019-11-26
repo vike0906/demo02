@@ -48,14 +48,32 @@ li{
 input,img{  
     border: none;  
 }
-/* .ant-message-notice-content{
-    background-color: rgb(218, 176, 176);
-    width: 15rem;
-} */
-/* .ant-message-error{
-    background-color: red;
-    color: red;
-} */
+.ant-message-notice-content{
+    padding: 0;
+}
+.ant-message-custom-content{
+    padding: 11px 16px;
+    height: 2.6rem;
+}
+.ant-message-success{
+    background-color: rgb(195, 240, 186);
+}
+.ant-message-info{
+    background-color: rgb(189, 223, 245);
+}
+.ant-message-warning{
+    background-color: rgb(245, 248, 200);
+}
+.ant-message-error{
+    background-color: rgb(235, 208, 208);
+}
+.ant-message-loading{
+    background-color: rgb(189, 223, 245);
+}
+.ant-message-warn{
+    background-color: rgb(245, 215, 215);
+}
+
 
 .nav-link-hover {
     position: relative;
