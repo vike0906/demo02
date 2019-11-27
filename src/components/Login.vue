@@ -68,29 +68,29 @@ export default {
       }
       this.loading = true;
       //访问后台，获取登录信息
-      // let params = { name: name, password: password };
-      // api.login(params)
-      //   .then(response => {
-      //     this.loading = false;
-      //     if (response) {
-      //       sessionStorage.setItem("user", JSON.stringify(response.data));
-      //       this.$router.push({ path: "/home" });
-      //     }
-      //   })
-      //   .catch(err => {
-      //     this.loading = false; //请求失败后的处理函数
-      //     console.log(err);
-      //   });
-      
-        if (name == "admin" && password == "123456") {
+      let params = { name: name, password: password };
+      api.login(params)
+        .then(response => {
           this.loading = false;
-          let user = { name: "vike0906", token: "token" };
-          sessionStorage.setItem("user", JSON.stringify(user));
-          this.$router.push({ path: "/home" });
-        }else{
-            this.loading = false;
-            this.$message.error("用户名或密码错误");
-        }
+          if (response) {
+            sessionStorage.setItem("user", JSON.stringify(response.content));
+            this.$router.push({ path: "/home" });
+          }
+        })
+        .catch(err => {
+          this.loading = false; //请求失败后的处理函数
+          console.log(err);
+        });
+      
+        // if (name == "admin" && password == "123456") {
+        //   this.loading = false;
+        //   let user = { name: "vike0906", token: "token" };
+        //   sessionStorage.setItem("user", JSON.stringify(user));
+        //   this.$router.push({ path: "/home" });
+        // }else{
+        //     this.loading = false;
+        //     this.$message.error("用户名或密码错误");
+        // }
     }
   }
 };
