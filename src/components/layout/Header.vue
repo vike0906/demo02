@@ -27,27 +27,7 @@
             <a-icon type="down" />
           </div>
         </div>
-        <div class="mask" v-if="showHeadMenu" @click="changeHeadMenu()"></div>
-        <transition name="bounce">
-          <div class="head-menu" v-if="showHeadMenu" @click="changeHeadMenu()">
-            <a-menu slot="overlay">
-              <a-menu-item>
-                <router-link to="/home">
-                  <a-icon type="user" />
-                  <span>首页</span>
-                </router-link>
-              </a-menu-item>
-              <a-menu-item @click="showChangePwdModal">
-                <a-icon type="edit" />
-                <span>修改密码</span>
-              </a-menu-item>
-              <a-menu-item @click="logout">
-                <a-icon type="poweroff" />
-                <span>退出登录</span>
-              </a-menu-item>
-            </a-menu>
-          </div>
-        </transition>
+        
         <a-modal
           title="修改密码"
           :visible="visible"
@@ -94,6 +74,27 @@
         </a-modal>
       </a-col>
     </a-row>
+    <div class="mask" v-if="showHeadMenu" @click="changeHeadMenu()"></div>
+        <transition name="bounce">
+          <div class="head-menu" v-if="showHeadMenu" @click="changeHeadMenu()">
+            <a-menu slot="overlay">
+              <a-menu-item>
+                <router-link to="/home">
+                  <a-icon type="user" />
+                  <span>首页</span>
+                </router-link>
+              </a-menu-item>
+              <a-menu-item @click="showChangePwdModal">
+                <a-icon type="edit" />
+                <span>修改密码</span>
+              </a-menu-item>
+              <a-menu-item @click="logout">
+                <a-icon type="poweroff" />
+                <span>退出登录</span>
+              </a-menu-item>
+            </a-menu>
+          </div>
+        </transition>
   </div>
 </template>
 

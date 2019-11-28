@@ -1,6 +1,8 @@
 import request from '@/api/config';
+import qs from 'qs';
 
 //获取全部用户
+export const getUsers = params => {return request({url: '/system/users',  method: 'get', data: qs.stringify(params)})}
 
 //禁用/删除用户
 
