@@ -1,12 +1,15 @@
 import Axios from 'axios';
+import Qs from 'qs';
 import {message} from 'ant-design-vue';
 import {Modal} from 'ant-design-vue';
 
-let baseURL = 'http://106.13.222.152:8084/api';
+// let baseURL = 'http://106.13.222.152:8084/api';
+let baseURL = 'http://localhost:8085';
 
 const service = Axios.create({
     baseURL: baseURL,
-    timeout: 1000,
+    timeout: 10000,
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
     responseType: 'json',
     responseEncoding: 'utf8',
 });
@@ -47,8 +50,7 @@ service.interceptors.request.use(
   
       // if the custom code is not 0, it is judged as an error.
       if (res.code !== 0) {
-        message.error(res.message,2);
-        // 10: Illegal token;
+        // 100: Illegal token;
         if (res.code === 100) {
             // message.error('当前登陆已失效，请重新登陆',2);
             Modal.error({
@@ -63,6 +65,8 @@ service.interceptors.request.use(
             // setTimeout(function(){
             //     location.reload();
             // },2000);
+        }else{
+          message.error(res.message);
         }
         return Promise.reject(new Error(res.message || 'Error'))
       } else {
@@ -74,7 +78,7 @@ service.interceptors.request.use(
       if(error.message.includes('timeout')){   // 判断请求异常信息中是否含有超时timeout字符串
         message.error('网络超时',2);        // reject这个错误信息
       }else{
-        message.error('服务器返回异常',2);
+        message.error('网络请求错误',2);
       }
       return Promise.reject(error);
     }

@@ -43,11 +43,9 @@
                 <a-icon type="edit" />
                 <span>修改密码</span>
               </a-menu-item>
-              <a-menu-item>
-                <router-link to="/logout">
+              <a-menu-item @click="logout">
                   <a-icon type="poweroff" />
                   <span>退出登录</span>
-                </router-link>
               </a-menu-item>
             </a-menu>
           </div>
@@ -59,6 +57,7 @@
 
 <script>
 import { Modal } from "ant-design-vue";
+import * as api from "@/api/api";
 export default {
   data() {
     return {
@@ -99,6 +98,19 @@ export default {
         title: "提示",
         content: "修改密码功能暂不开通"
       });
+    },
+    logout(){
+      api.logout().then(response => {
+        let that = this;
+        if(response.code == 0 ){
+          this.$message.success(response.message);
+        }else{
+          this.$message.error('系统异常，强制退出');
+        }
+        setTimeout(function(){
+          that.$router.push({ path: "/logout" });
+        },1000);
+        });
     }
   }
 };
