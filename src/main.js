@@ -17,6 +17,11 @@ message.config({
   duration: 2,
   maxCount: 3,
 });
+notification.config({
+  duration: 4.5,
+  placement: 'topRight',
+  top: '4.5rem'
+});
 Vue.use(Antd);
 
 router.beforeEach((to, from, next) => {
@@ -25,11 +30,16 @@ router.beforeEach((to, from, next) => {
     sessionStorage.removeItem('user');
   }
   let user = JSON.parse(sessionStorage.getItem('user'));
-  if (!user && toPath != '/login') {
+  if((user == null || typeof user == 'undefined') && toPath != '/login'){
     next({ path: '/login' });
-  } else {
+  }else{
     next();
   }
+  // if (!user && toPath != '/login') {
+  //   next({ path: '/login' });
+  // } else {
+    
+  // }
 });
 
 /* eslint-disable no-new */

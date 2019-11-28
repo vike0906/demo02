@@ -11,4 +11,4 @@ export const logout = () => { return request({url: '/logout',  method: 'get' });
 export const gainMenu = () => { return request({url: '/gainMenu',  method: 'get' }); }
 
 //修改密码
-export const changePassword = params => { return request({url: '/changePassword',  method: 'post' , data: params}); }
+export const changePassword = params => { return request({url: '/change-psd',  method: 'post' , data: qs.stringify(params)}); }

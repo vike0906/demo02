@@ -74,10 +74,19 @@ export default {
     },
     maskClose:function(){
       this.$store.commit("SIDER_SHOW");
-    }
+    },
+    welcome() {
+        this.$notification.open({
+          message: '欢迎登陆',
+          description:
+            '本系统使用前后端分离设计，服务部署于Nginx代理服务器',
+          icon: <a-icon type="smile" style="color: #108ee9" />,
+        });
+      },
   },
   created(){
     this.init();
+    this.welcome();
   },
   mounted() {
     let timer = false;

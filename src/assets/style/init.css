@@ -54,6 +54,7 @@ input,img{
 .ant-message-custom-content{
     padding: 11px 16px;
     height: 2.6rem;
+    border-radius: 4px;
 }
 .ant-message-success{
     background-color: rgb(195, 240, 186);
