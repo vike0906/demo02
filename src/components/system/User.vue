@@ -19,12 +19,16 @@
             :pagination="pagination"
             :loading="loading"
             @change="handleTableChange"
-            :scroll="{ x: 500, y: 0 }"
+            :scroll="{ x: true, y: 0 }"
             bordered
           >
               <div slot="action" slot-scope="text, record" style="text-align: center">
                 <a-button  icon="edit" @click="editUser(record.id)">编辑</a-button>
               <a-button type="danger" icon="delete" @click="deleteUser(record.id)">删除</a-button>
+              </div>
+              <div slot="status" slot-scope="text">
+                <span v-if="text==1" style="color=green">正常</span>
+                <span v-else style="color=red">禁用</span>
               </div>
               
           </a-table>
@@ -54,7 +58,8 @@ const columns = [
   {
     title: "状态",
     dataIndex: "status",
-    key: "status"
+    key: "status",
+    scopedSlots: { customRender: "status" }
   },
   {
     title: "创建时间",
