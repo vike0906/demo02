@@ -2,10 +2,10 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue'
 import App from './App'
-import Antd from 'ant-design-vue';
-import { message,notification } from 'ant-design-vue'
 import store from './store/';
 import router from './router'
+import Antd from 'ant-design-vue';
+import { message,notification } from 'ant-design-vue'
 import 'ant-design-vue/dist/antd.css';
 import './assets/style/init.css';
 

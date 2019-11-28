@@ -125,7 +125,7 @@ export default {
 
 @media only screen and (max-width: 639px) {
   .login-content {
-    margin-top: 5rem;
+    margin-top: 3rem;
   }
 }
 </style>
