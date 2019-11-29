@@ -44,7 +44,7 @@
               </a-row>
             </div>
             <div slot="action" slot-scope="text, record" style="text-align: center">
-              <a-button icon="edit" @click="editUser(record.id)" size="small">编辑</a-button>
+              <a-button icon="edit" @click="showEditUserModal(record)" size="small">编辑</a-button>
               <a-button type="danger" icon="delete" @click="deleteUser(record.id)" size="small">删除</a-button>
             </div>
             <div slot="status" slot-scope="text">
@@ -77,6 +77,14 @@
             :xl="{span: 22, offset:2}"
           >
             <a-form :form="form">
+              <div v-show="addInfo">
+                <p>
+                  <a-icon type="info-circle" />&nbsp;新增用户初始密码为
+                  <strong>123456</strong>，建议初次登录后立即更改
+                </p>
+                <br />
+              </div>
+
               <a-form-item label="用户名称" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
                 <a-input
                   v-decorator="['name', { rules: [{ required: true, message: '请输入用户名称' }] }]"
@@ -89,24 +97,26 @@
                   v-decorator="['loginName', { rules: [{ required: true, message: '请输入登陆名称' }] }]"
                   type="text"
                   placeholder="输入登陆名称"
+                  :disabled="isLN"
                 />
               </a-form-item>
               <a-form-item label="用户角色" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
                 <a-select
                   v-decorator="[ 'roleId', { rules: [{ required: true, message: '请选择用户角色' }] }, ]"
                   placeholder="选择用户角色"
+                  initialValue="1"
                 >
-                  <a-select-option value="1">管理员</a-select-option>
-                  <a-select-option value="2">普通用户</a-select-option>
+                  <a-select-option value='1'>管理员</a-select-option>
+                  <a-select-option value='2'>普通用户</a-select-option>
                 </a-select>
               </a-form-item>
               <a-form-item label="用户状态" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
                 <a-select
-                  v-decorator="[ 'status', { rules: [{ required: true, message: '请选择用户状态' }] }, ]"
+                  v-decorator="[ 'status', { rules: [{ required: true, message: '请选择用户状态' }] }]"
                   placeholder="选择用户状态"
                 >
-                  <a-select-option value="1">正常</a-select-option>
-                  <a-select-option value="2">冻结</a-select-option>
+                  <a-select-option value='1'>正常</a-select-option>
+                  <a-select-option value='2'>禁用</a-select-option>
                 </a-select>
               </a-form-item>
             </a-form>
@@ -122,23 +132,19 @@ import { formatDateTime } from "@/utils/util";
 const columns = [
   {
     title: "用户名称",
-    dataIndex: "name",
-    key: "name"
+    dataIndex: "name"
   },
   {
     title: "登录名",
-    dataIndex: "loginName",
-    key: "loginName"
+    dataIndex: "loginName"
   },
   {
     title: "用户角色",
-    dataIndex: "role.name",
-    key: "role.name"
+    dataIndex: "role.name"
   },
   {
     title: "状态",
     dataIndex: "status",
-    key: "status",
     scopedSlots: { customRender: "status" }
   },
   {
@@ -146,14 +152,12 @@ const columns = [
     width: "15%",
     dataIndex: "createTime",
     sorter: true,
-    key: "createTime",
     scopedSlots: { customRender: "createTime" }
   },
   {
     title: "操作",
     width: "15%",
     dataIndex: "action",
-    key: "action",
     scopedSlots: { customRender: "action" }
   }
 ];
@@ -172,6 +176,9 @@ export default {
       okText: "",
       visible: false,
       confirmLoading: false,
+      editId:-1,
+      addInfo: false,
+      isLN:false,
       form: this.$form.createForm(this, { name: "saveUser" })
     };
   },
@@ -189,30 +196,56 @@ export default {
     }
   },
   methods: {
-    saveUser(){
+    saveUser() {
       this.confirmLoading = true;
       this.form.validateFields((err, values) => {
         if (!err) {
-          let params = { name: values.name, loginName: values.loginName, roleId: values.roleId,status: values.status};
+          let params = {
+            id: this.editId,
+            name: values.name,
+            loginName: values.loginName,
+            roleId: values.roleId,
+            status: values.status
+          };
           console.log(params);
-          api.saveUser(params).then(response=>{
-            if(response){
-              if(response.code==0){
-                this.visible = true;
-                this.$message.success(response.message);
+          api.saveUser(params).then(response => {
+              if (response) {
+                if (response.code == 0) {
+                  this.visible = false;
+                  this.$message.success(response.message);
+                  this.getUsers();
+                }
               }
-            }
-          }).catch(err=>{
-            console.log(err);
-          });
+            })
+            .catch(err => {
+              console.log(err);
+            });
         }
       });
       this.confirmLoading = false;
     },
     showAddUserModal() {
-      this.modalTitle = '新增用户';
-      this.okText = '确认新增';
+      this.isLN=false;
+      this.editId=-1;
+      this.form.getFieldDecorator('roleId', {initialValue:'2'});
+      this.form.getFieldDecorator('status', {initialValue:'1'});
+      this.modalTitle = "新增用户";
+      this.okText = "确认添加";
       this.visible = true;
+      this.addInfo = true;
+    },
+    showEditUserModal(record) {
+      console.log(record);
+      this.isLN=true;
+      this.editId=record.id;
+      this.form.getFieldDecorator('name', {initialValue:record.name});
+      this.form.getFieldDecorator('loginName', {initialValue:record.loginName});
+      this.form.getFieldDecorator('roleId', {initialValue:record.role.id+''});
+      this.form.getFieldDecorator('status', {initialValue:record.status+''});
+      this.modalTitle = "编辑用户";
+      this.okText = "确认修改";
+      this.visible = true;
+      this.addInfo = false;
     },
     handleCancel(e) {
       this.visible = false;
@@ -239,29 +272,44 @@ export default {
     },
     getUsers(params) {
       this.loading = true;
-      api
-        .getUsers(params)
-        .then(response => {
+      api.getUsers(params).then(response => {
           if (response) {
             if (response.code == 0) {
               this.data = response.content.content;
               this.pagination.total = response.content.totalElements;
             }
           }
-        })
-        .catch(err => {
+        }).catch(err => {
           console.log(err);
         });
       this.loading = false;
     },
-    editUser: function(id) {
-      console.log(id);
-    },
     deleteUser: function(id) {
-      console.log(id);
+      let that = this;
+      this.$confirm({
+          title: '确认删除该用户?',
+          content: '删除后该用户将无法继续登录平台',
+          okText: '删除',
+          okType: 'danger',
+          cancelText: '取消',
+          onOk() {
+            let params = {id:id}
+            api.deleteUser(params).then(response=>{
+              if(response){
+                if(response.code==0){
+                  that.$message.success(response.message);
+                  that.getUsers();
+                }
+              }
+            }).catch(err=>{
+              console.log(err);
+            });
+            return new Promise((resolve, reject) => { resolve(true);});
+          },
+        });
     }
   },
-  created() {
+  mounted() {
     this.getUsers();
   },
   filters: {

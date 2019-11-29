@@ -56,6 +56,7 @@ service.interceptors.request.use(
             Modal.error({
               title: '重新登陆',
               content: '当前登陆已失效，请重新登陆',
+              okText: '确定',
               onOk(){
                 sessionStorage.removeItem('user');
                 location.reload();

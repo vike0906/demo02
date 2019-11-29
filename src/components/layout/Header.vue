@@ -169,8 +169,7 @@ export default {
             return;
           }
           let params = { oldPsd: values.oldPsd, newPsd: values.newPsd };
-          api
-            .changePassword(params)
+          api.changePassword(params)
             .then(response => {
               if (response) {
                 if (response.code == 0) {
