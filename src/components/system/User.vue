@@ -104,10 +104,8 @@
                 <a-select
                   v-decorator="[ 'roleId', { rules: [{ required: true, message: '请选择用户角色' }] }, ]"
                   placeholder="选择用户角色"
-                  initialValue="1"
-                >
-                  <a-select-option value='1'>管理员</a-select-option>
-                  <a-select-option value='2'>普通用户</a-select-option>
+                > 
+                <a-select-option v-for="item in roleList" :key="item.id" :value="item.id+''" >{{item.name}}</a-select-option>
                 </a-select>
               </a-form-item>
               <a-form-item label="用户状态" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
@@ -176,6 +174,7 @@ export default {
       okText: "",
       visible: false,
       confirmLoading: false,
+      roleList:[],
       editId:-1,
       addInfo: false,
       isLN:false,
@@ -207,7 +206,6 @@ export default {
             roleId: values.roleId,
             status: values.status
           };
-          console.log(params);
           api.saveUser(params).then(response => {
             this.confirmLoading = false;
               if (response) {
@@ -227,6 +225,7 @@ export default {
       
     },
     showAddUserModal() {
+      this.getRoleList();
       this.isLN=false;
       this.editId=-1;
       this.form.getFieldDecorator('roleId', {initialValue:'2'});
@@ -237,7 +236,7 @@ export default {
       this.addInfo = true;
     },
     showEditUserModal(record) {
-      console.log(record);
+      this.getRoleList();
       this.isLN=true;
       this.editId=record.id;
       this.form.getFieldDecorator('name', {initialValue:record.name});
@@ -271,6 +270,17 @@ export default {
       let queryStr = this.queryStr ? this.queryStr : null;
       let params = { queryStr: queryStr, limit: 15 };
       this.getUsers(params);
+    },
+    getRoleList(){
+      api.getActiveRole().then(response=>{
+        if (response) {
+            if (response.code == 0) {
+              this.roleList = response.content;
+            }
+          }
+      }).catch(err=>{
+        console.log(err);
+      });
     },
     getUsers(params) {
       this.loading = true;
