@@ -209,6 +209,7 @@ export default {
           };
           console.log(params);
           api.saveUser(params).then(response => {
+            this.confirmLoading = false;
               if (response) {
                 if (response.code == 0) {
                   this.visible = false;
@@ -219,10 +220,11 @@ export default {
             })
             .catch(err => {
               console.log(err);
+              this.confirmLoading = false;
             });
         }
       });
-      this.confirmLoading = false;
+      
     },
     showAddUserModal() {
       this.isLN=false;
