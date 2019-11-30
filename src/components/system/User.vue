@@ -222,6 +222,8 @@ export default {
               console.log(err);
               this.confirmLoading = false;
             });
+        }else{
+          this.confirmLoading = false;
         }
       });
       
