@@ -37,8 +37,8 @@ export default new Router({
         path:'system-role',
         component:()=>import('@/components/system/Role')
       },{
-        path:'system-permission',
-        component:()=>import('@/components/system/Permission')
+        path:'system-action',
+        component:()=>import('@/components/system/Action')
       },]
     },
     {

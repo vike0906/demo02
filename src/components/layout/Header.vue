@@ -204,8 +204,9 @@ export default {
           } else {
             this.$message.error("系统异常，强制退出");
           }
+          let that = this;
           setTimeout(() => {
-            this.$router.push({ path: "/logout" });
+            that.$router.push({ path: "/logout" }).catch(err=>{});
           }, 1000);
         })
         .catch(err => {

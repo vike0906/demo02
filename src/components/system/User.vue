@@ -293,10 +293,11 @@ export default {
               this.pagination.total = response.content.totalElements;
             }
           }
+          this.loading = false;
         }).catch(err => {
+          this.loading = false;
           console.log(err);
         });
-      this.loading = false;
     },
     deleteUser: function(id) {
       let that = this;

@@ -103,15 +103,12 @@
               </a-form-item>
               <a-form-item label="角色权限" :label-col="{ span: 5 }" :wrapper-col="{ span: 12 }">
                 <a-tree
-                  v-decorator="[ 'action', { rules: [{ required: true }] }]"
                   checkable
                   :treeData="treeData"
-                  :defaultExpandedKeys="['1', '2']"
-                  :defaultCheckedKeys="['1', '5']"
-                  @select="this.onSelect"
+                  :defaultExpandedKeys="expandedKeys"
+                  :defaultCheckedKeys="checkedKeys"
                   @check="this.onCheck"
                 >
-                  <a-icon slot="stock" type="stock" />
                 </a-tree>
               </a-form-item>
             </a-col>
@@ -124,28 +121,6 @@
 <script>
 import * as api from "@/api/system";
 import { formatDateTime } from "@/utils/util";
-const treeData = [
-  {
-    title: "菜单权限",
-    key: "0",
-    children: [
-      {
-        title: "股票市场",
-        key: "1",
-        children: [{ title: "A股汇总", key: "3" }]
-      },
-      {
-        title: "系统管理",
-        key: "2",
-        children: [
-          { title: "用户管理", key: "4" },
-          { title: "角色管理", key: "5" },
-          { title: "权限管理", key: "6" }
-        ]
-      }
-    ]
-  }
-];
 const columns = [
   {
     title: "角色名称",
@@ -184,14 +159,17 @@ export default {
       },
       loading: false,
       columns,
-      queryStr: "",
       modalTitle: "",
       okText: "",
       visible: false,
       confirmLoading: false,
       editId: -1,
       form: this.$form.createForm(this, { name: "saveRole" }),
-      treeData
+      
+      treeData:[],
+      expandedKeys:[],
+      checkedKeys:[],
+      checkActions:[],
     };
   },
   computed: {
@@ -208,11 +186,8 @@ export default {
     }
   },
   methods: {
-    onSelect(selectedKeys, info) {
-      console.log("selected", selectedKeys, info);
-    },
     onCheck(checkedKeys, info) {
-      console.log("onCheck", checkedKeys, info);
+      this.checkActions = checkedKeys;
     },
     saveRole() {
       this.confirmLoading = true;
@@ -222,11 +197,10 @@ export default {
             id: this.editId,
             name: values.name,
             code: values.code,
-            status: values.status
+            status: values.status,
+            actions: this.checkActions
           };
-          api
-            .saveRole(params)
-            .then(response => {
+          api.saveRole(params).then(response => {
               this.confirmLoading = false;
               if (response) {
                 if (response.code == 0) {
@@ -240,26 +214,53 @@ export default {
               console.log(err);
               this.confirmLoading = false;
             });
+        }else{
+          this.confirmLoading = false;
         }
       });
     },
     showAddRoleModal() {
-      this.editId = -1;
-      this.form.getFieldDecorator("status", { initialValue: "1" });
-      this.modalTitle = "新增角色";
-      this.okText = "确认添加";
-      this.visible = true;
+      api.getActiveAction().then(response=>{
+        if(response){
+          if(response.code==0){
+            let treeDataVo = response.content;
+            this.treeData = treeDataVo.tree;
+            this.expandedKeys =treeDataVo.expandedKeys;
+            this.checkedKeys =treeDataVo.checkedKeys;
+            
+            this.editId = -1;
+            this.form.getFieldDecorator("status", { initialValue: "1" });
+            this.modalTitle = "新增角色";
+            this.okText = "确认添加";
+            this.visible = true;
+          }
+        }
+      }).catch(err=>{console.log(err)});
     },
     showEditRoleModal(record) {
-      this.editId = record.id;
-      this.form.getFieldDecorator("name", { initialValue: record.name });
-      this.form.getFieldDecorator("code", { initialValue: record.code });
-      this.form.getFieldDecorator("status", {
-        initialValue: record.status + ""
-      });
-      this.modalTitle = "编辑角色";
-      this.okText = "确认修改";
-      this.visible = true;
+      let params = {roleId:record.id};
+      api.getActiveAction(params).then(response=>{
+        if(response){
+          if(response.code==0){
+            let treeDataVo = response.content;
+            this.treeData = treeDataVo.tree;
+            this.expandedKeys =treeDataVo.expandedKeys;
+            this.checkedKeys =treeDataVo.checkedKeys;
+            this.checkActions = treeDataVo.checkedKeys;
+            
+            this.editId = record.id;
+            this.form.getFieldDecorator("name", { initialValue: record.name });
+            this.form.getFieldDecorator("code", { initialValue: record.code });
+            this.form.getFieldDecorator("status", {
+              initialValue: record.status + ""
+            });
+            this.modalTitle = "编辑角色";
+            this.okText = "确认修改";
+            this.visible = true;
+          }
+        }
+      }).catch(err=>{console.log(err)});
+      
     },
     handleCancel(e) {
       this.visible = false;
@@ -288,11 +289,12 @@ export default {
               this.pagination.total = response.content.totalElements;
             }
           }
+          this.loading = false;
         })
         .catch(err => {
+          this.loading = false;
           console.log(err);
         });
-      this.loading = false;
     }
   },
   mounted() {

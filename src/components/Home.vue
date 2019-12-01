@@ -20,7 +20,7 @@
           <a-layout-footer>
             <p style="text-align: center">
               create by
-              <a href="#" class="text-dark">Vike0906</a> © 2019
+              <a href="#" class="text-dark">vike0906</a> © 2019
             </p>
           </a-layout-footer>
         </a-layout>
