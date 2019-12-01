@@ -371,7 +371,7 @@ export default {
     scroll: function() {
       let screenSize = this.$store.getters.getScreenSize;
       if (screenSize <= 1000) {
-        return { x: 1000, y: 0 };
+        return { x: 1000, y: 1000 };
       } else {
         return { x: 0, y: 0 };
       }
