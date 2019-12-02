@@ -81,16 +81,6 @@ export default {
           this.loading = false; //请求失败后的处理函数
           console.log(err);
         });
-      
-        // if (name == "admin" && password == "123456") {
-        //   this.loading = false;
-        //   let user = { name: "vike0906", token: "token" };
-        //   sessionStorage.setItem("user", JSON.stringify(user));
-        //   this.$router.push({ path: "/home" });
-        // }else{
-        //     this.loading = false;
-        //     this.$message.error("用户名或密码错误");
-        // }
     }
   }
 };

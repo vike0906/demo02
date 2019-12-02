@@ -74,6 +74,7 @@ input,img{
 .ant-message-warn{
     background-color: rgb(245, 215, 215);
 }
+.ant-table td { white-space: nowrap; }
 
 
 .nav-link-hover {

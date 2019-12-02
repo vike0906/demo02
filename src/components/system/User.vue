@@ -164,7 +164,8 @@ export default {
     return {
       data: [],
       pagination: {
-        defaultPageSize: 15,
+        total:0,
+        defaultPageSize: 10,
         showTotal: total => `共 ${total} 条数据`
       },
       loading: false,
@@ -185,7 +186,7 @@ export default {
     scroll: function() {
       let screenSize = this.$store.getters.getScreenSize;
       if (screenSize <= 1000) {
-        return { x: 1000, y: 500 };
+        return { x: 1000, y: 280 };
       } else {
         return { x: 0, y: 0 };
       }
