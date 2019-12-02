@@ -236,7 +236,6 @@ export default {
             if (response.code == 0) {
               this.data = response.content.content;
               this.pagination.total = response.content.totalElements;
-              console.log(this.pagination);
             }
           }
           this.loading = false;
