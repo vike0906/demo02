@@ -1,6 +1,9 @@
 import request from '@/api/config';
 import qs from 'qs';
 
+//获取菜单
+export const getMenu = () =>{return request({url: '/system/menu', method: 'get'})}
+
 //获取全部用户
 export const getUsers = params => {return request({url: '/system/users',  method: 'get', params: params})}
 //新增/修改用户信息
