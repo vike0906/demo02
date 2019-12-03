@@ -3,7 +3,7 @@
 ### QQ:2609366740
 ### Email:liujialong688@outlook.com
 
-> A Vue.js project
+> 基础后台管理系统
 
 ## Build Setup
 
