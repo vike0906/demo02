@@ -1,7 +1,7 @@
 # demo02
 
-# QQ:2609366740
-# Email:liujialong688@outlook.com
+### QQ:2609366740
+### Email:liujialong688@outlook.com
 
 > A Vue.js project
 
