@@ -33,7 +33,7 @@
                 class="login-password"
                 v-model="password"
                 @keyup.enter.native="login"
-                placeholder="账户密码"
+                placeholder="密码"
               />
               <a-row class="login-captcha" type="flex" justify="space-between" align="middle">
                 <a-col :span=10>
@@ -41,7 +41,7 @@
                     class="captcha"
                     v-model="captcha"
                     @keyup.enter.native="login"
-                    placeholder="图片验证码"
+                    placeholder="图形验证码"
                   />
                 </a-col>
                 
@@ -104,6 +104,7 @@ export default {
               }
             })
             .catch(err => {
+              this.changeCaptcha();
               this.loading = false; 
             });
         }
@@ -156,7 +157,7 @@ export default {
   padding-right: .5rem;
 }
 .captcha{
-
+  padding-left: .5rem;
 }
 .login-summit {
   margin-top: 1rem;

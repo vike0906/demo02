@@ -1,11 +1,10 @@
 import Axios from 'axios';
-import Qs from 'qs';
 import {message} from 'ant-design-vue';
 import {Modal} from 'ant-design-vue';
 
 // let baseURL = 'http://106.13.222.152:8084/api';
-let baseURL = 'http://localhost:8085';
-
+// let baseURL = 'http://localhost:8085';
+let baseURL = process.env.API_ROOT;
 const service = Axios.create({
     baseURL: baseURL,
     timeout: 10000,
