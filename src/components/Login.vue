@@ -35,7 +35,7 @@
                 @keyup.enter.native="login"
                 placeholder="密码"
               />
-              <a-row class="login-captcha" type="flex" justify="space-between" align="middle">
+              <a-row v-show="captchaSwitch" class="login-captcha" type="flex" justify="space-between" align="middle">
                 <a-col :span=10>
                   <a-input
                     class="captcha"
@@ -45,10 +45,11 @@
                   />
                 </a-col>
                 
-                <a-col :span=14 style="text-align:right;">
+                <a-col :span=14 style="text-align:left;">
                   <a @click="changeCaptcha"><img class="captchaImg" :src="captchaImg" alt="点击切换"> </a>
                 </a-col>
               </a-row>
+
               <a-button type="primary" class="login-summit" :loading="loading" @click="login">登陆</a-button>
             </a-col>
           </a-row>
@@ -65,9 +66,11 @@ export default {
       loading: false,
       loginName: "",
       password: "",
+      
+      captchaSwitch: false,
       captcha:"",
       serial: "",
-      captchaImg: ""
+      captchaImg: "",
     };
   },
   methods: {
@@ -85,16 +88,14 @@ export default {
         this.$message.error("请输入密码");
         return;
       }
-      if (captcha.length == 0) {
+      if (this.captchaSwitch && captcha.length == 0) {
         this.$message.error("请输入验证码");
         return;
       }
       this.loading = true;
-      let validation = {serial:serial,captcha:captcha}
-      api.validation(validation).then(response=>{
-        if(response){
-          //访问后台，获取登录信息
-          let params = { name: name, password: password };
+      if(!this.captchaSwitch){
+        //访问后台，获取登录信息
+        let params = { name: name, password: password };
           api.login(params)
             .then(response => {
               this.loading = false;
@@ -104,14 +105,32 @@ export default {
               }
             })
             .catch(err => {
-              this.changeCaptcha();
               this.loading = false; 
             });
-        }
-      }).catch(err=>{
-        this.changeCaptcha();
-        this.loading = false;
-      })
+      }else{
+        let validation = {serial:serial,captcha:captcha}
+        api.validation(validation).then(response=>{
+          if(response){
+            //访问后台，获取登录信息
+            let params = { name: name, password: password };
+            api.login(params)
+              .then(response => {
+                this.loading = false;
+                if (response) {
+                  sessionStorage.setItem("user", JSON.stringify(response.content));
+                  this.$router.push({ path: "/home" });
+                }
+              })
+              .catch(err => {
+                this.changeCaptcha();
+                this.loading = false; 
+              });
+          }
+        }).catch(err=>{
+          this.changeCaptcha();
+          this.loading = false;
+        })
+      }
       
     },
     changeCaptcha(){
@@ -133,8 +152,10 @@ export default {
     }
   },
   created(){
+    if(this.captchaSwitch){
       this.serial = this.uuid();
       this.captchaImg = this.$API_ROOT+'/captcha?serial='+this.serial;
+    }
   }
 };
 </script>
@@ -154,7 +175,8 @@ export default {
 .captchaImg{
   height: 2.2rem;
   width: 6.3rem;
-  padding-right: .5rem;
+  padding-left: .5rem
+  
 }
 .captcha{
   padding-left: .5rem;
