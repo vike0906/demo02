@@ -1,11 +1,8 @@
 import Axios from 'axios';
-import Qs from 'qs';
 import {message} from 'ant-design-vue';
 import {Modal} from 'ant-design-vue';
 
-// let baseURL = 'http://106.13.222.152:8084/api';
-let baseURL = 'http://localhost:8085';
-
+let baseURL = process.env.API_ROOT;
 const service = Axios.create({
     baseURL: baseURL,
     timeout: 10000,
@@ -46,32 +43,37 @@ service.interceptors.request.use(
      * You can also judge the status by HTTP Status Code
      */
     response => {
-      const res = response.data
+      
+      const res = response.data;
   
       // if the custom code is not 0, it is judged as an error.
-      if (res.code !== 0) {
-        // 100: Illegal token;
-        if (res.code === 100) {
-            // message.error('当前登陆已失效，请重新登陆',2);
-            Modal.error({
-              title: '重新登陆',
-              content: '当前登陆已失效，请重新登陆',
-              okText: '确定',
-              onOk(){
-                sessionStorage.removeItem('user');
-                location.reload();
-              }
-            });
-            // sessionStorage.removeItem('user');
-            // setTimeout(function(){
-            //     location.reload();
-            // },2000);
-        }else{
-          message.error(res.message);
+      if(response.config.url.endsWith('captcha')){
+        return res;
+      }else{
+        if (res.code !== 0) {
+          // 100: Illegal token;
+          if (res.code === 100) {
+              // message.error('当前登陆已失效，请重新登陆',2);
+              Modal.error({
+                title: '重新登陆',
+                content: '当前登陆已失效，请重新登陆',
+                okText: '确定',
+                onOk(){
+                  sessionStorage.removeItem('user');
+                  location.reload();
+                }
+              });
+              // sessionStorage.removeItem('user');
+              // setTimeout(function(){
+              //     location.reload();
+              // },2000);
+          }else{
+            message.error(res.message);
+          }
+          return Promise.reject(new Error(res.message || 'Error'))
+        } else {
+          return res
         }
-        return Promise.reject(new Error(res.message || 'Error'))
-      } else {
-        return res
       }
     },
     error => {
@@ -83,6 +85,7 @@ service.interceptors.request.use(
       }
       return Promise.reject(error);
     }
+      
   )
   
   export default service

@@ -35,6 +35,20 @@
                 @keyup.enter.native="login"
                 placeholder="密码"
               />
+              <a-row class="login-captcha" type="flex" justify="space-between" align="middle">
+                <a-col :span=10>
+                  <a-input
+                    class="captcha"
+                    v-model="captcha"
+                    @keyup.enter.native="login"
+                    placeholder="图形验证码"
+                  />
+                </a-col>
+                
+                <a-col :span=14 style="text-align:right;">
+                  <a @click="changeCaptcha"><img class="captchaImg" :src="captchaImg" alt="点击切换"> </a>
+                </a-col>
+              </a-row>
               <a-button type="primary" class="login-summit" :loading="loading" @click="login">登陆</a-button>
             </a-col>
           </a-row>
@@ -50,7 +64,10 @@ export default {
     return {
       loading: false,
       loginName: "",
-      password: ""
+      password: "",
+      captcha:"",
+      serial: "",
+      captchaImg: ""
     };
   },
   methods: {
@@ -58,6 +75,8 @@ export default {
       const that = this;
       let name = this.loginName;
       let password = this.password;
+      let captcha = this.captcha;
+      let serial = this.serial;
       if (name.length == 0) {
         this.$message.error("请输入登陆名");
         return;
@@ -66,22 +85,56 @@ export default {
         this.$message.error("请输入密码");
         return;
       }
+      if (captcha.length == 0) {
+        this.$message.error("请输入验证码");
+        return;
+      }
       this.loading = true;
-      //访问后台，获取登录信息
-      let params = { name: name, password: password };
-      api.login(params)
-        .then(response => {
-          this.loading = false;
-          if (response) {
-            sessionStorage.setItem("user", JSON.stringify(response.content));
-            this.$router.push({ path: "/home" });
-          }
-        })
-        .catch(err => {
-          this.loading = false; //请求失败后的处理函数
-          console.log(err);
-        });
+      let validation = {serial:serial,captcha:captcha}
+      api.validation(validation).then(response=>{
+        if(response){
+          //访问后台，获取登录信息
+          let params = { name: name, password: password };
+          api.login(params)
+            .then(response => {
+              this.loading = false;
+              if (response) {
+                sessionStorage.setItem("user", JSON.stringify(response.content));
+                this.$router.push({ path: "/home" });
+              }
+            })
+            .catch(err => {
+              this.changeCaptcha();
+              this.loading = false; 
+            });
+        }
+      }).catch(err=>{
+        this.changeCaptcha();
+        this.loading = false;
+      })
+      
+    },
+    changeCaptcha(){
+      this.serial = this.uuid();
+      this.captchaImg = this.$API_ROOT+'/captcha?serial='+this.serial;
+    },
+    // 获取uuid
+    uuid() {
+      let s = [];
+      let hexDigits = "0123456789abcdef";
+      for (let i = 0; i < 36; i++) {
+          s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+      }
+      s[14] = "4";  // bits 12-15 of the time_hi_and_version field to 0010
+      s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);  // bits 6-7 of the clock_seq_hi_and_reserved to 01
+      let uuid = s.join("");
+      this.text = uuid;
+      return uuid;
     }
+  },
+  created(){
+      this.serial = this.uuid();
+      this.captchaImg = this.$API_ROOT+'/captcha?serial='+this.serial;
   }
 };
 </script>
@@ -92,6 +145,19 @@ export default {
 .login-password {
   margin-top: 1rem;
   text-align: left;
+}
+.login-captcha {
+  margin-top: 1rem;
+  
+  
+}
+.captchaImg{
+  height: 2.2rem;
+  width: 6.3rem;
+  padding-right: .5rem;
+}
+.captcha{
+  padding-left: .5rem;
 }
 .login-summit {
   margin-top: 1rem;

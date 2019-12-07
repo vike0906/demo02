@@ -12,6 +12,7 @@ import './assets/style/init.css';
 Vue.config.productionTip = false
 Vue.prototype.$message = message;
 Vue.prototype.$notification = notification;
+Vue.prototype.$API_ROOT = process.env.API_ROOT;
 message.config({
   top: `1.5rem`,
   duration: 2,
