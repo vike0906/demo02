@@ -273,6 +273,7 @@ export default {
         this.iconShow = true;
         this.urlShow = false;
       }else{
+        this.getActionList();
         this.form.getFieldDecorator("type", { initialValue: '2'});
         this.iconShow = false;
         this.urlShow = true;
