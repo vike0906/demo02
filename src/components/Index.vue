@@ -1,33 +1,37 @@
 <template>
   <div class="template">
     <div class="content">
-      <a-row :gutter="{ xs: 8, sm: 16, md: 32, lg: 64, xl: 64}">
-        <a-col class="home-card-warrpe" :xs="24">
-          <div id="myChart" style="width:100%;height:500px"></div>
+      <br><br>
+      <a-row>
+        <a-col class="statistics-warrpe" :span="24">
+          <div id="myChart" style="width:100%;height:400px;"></div>
         </a-col>
       </a-row>
-      <a-row :gutter="{ xs: 8, sm: 16, md: 32, lg: 64, xl: 64}">
-        <a-col class="home-card-warrpe" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-          <a-card class="home-card" title="本月访问次数" :bordered="false">
-            <p>32</p>
+      <br><br>
+      <a-row :gutter="{ xs: 8, sm: 16, md: 32, lg: 64, xl: 128}">
+        <a-col class="home-card-warrpe" :xs="24" :sm="12" :md="6" :lg="6" :xl="{span:5,offset:2}">
+          <a-card class="home-card" :bordered="false">
+            <a-statistic title="本月访问次数" :value="112893" style="margin-right: 50px" />
           </a-card>
         </a-col>
-        <a-col class="home-card-warrpe" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-          <a-card class="home-card" title="上月访问次数" :bordered="false">
-            <p>123</p>
+        <a-col class="home-card-warrpe" :xs="24" :sm="12" :md="6" :lg="6" :xl="5">
+          <a-card class="home-card"  :bordered="false">
+            <a-statistic title="上月访问次数" :value="112893" style="margin-right: 50px" />
           </a-card>
         </a-col>
-        <a-col class="home-card-warrpe" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-          <a-card class="home-card" title="当前任务数量" :bordered="false">
-            <p>3</p>
+        <a-col class="home-card-warrpe" :xs="24" :sm="12" :md="6" :lg="6" :xl="5">
+          <a-card class="home-card"  :bordered="false">
+            <a-statistic title="当前任务数量" :value="2" style="margin-right: 50px" />
           </a-card>
         </a-col>
-        <a-col class="home-card-warrpe" :xs="24" :sm="12" :md="6" :lg="6" :xl="6">
-          <a-card class="home-card" title="全部任务数量" :bordered="false">
-            <p>12</p>
+        <a-col class="home-card-warrpe" :xs="24" :sm="12" :md="6" :lg="6" :xl="5">
+          <a-card class="home-card"  :bordered="false">
+            <a-statistic title="全部任务数量" :value="23" style="margin-right: 50px" />
           </a-card>
         </a-col>
       </a-row>
+      
+      
       
     </div>
   </div>
@@ -43,17 +47,22 @@ require('echarts/lib/chart/line')
 // 引入提示框和title组件
 require('echarts/lib/component/tooltip')
 require('echarts/lib/component/title')
+require('echarts/lib/component/legend')
 export default {
   data:function(){
     return {
-      statistics:[]
+      statistics:[],
+      mychart:{}
     };
   },
   created(){
     //do nothing...
   },
-  mounted(){
+  mounted() {
     this.getStatistics();
+    let timer = false;
+    const that = this;
+    window.addEventListener('resize',()=>that.mychart.resize(),false);
   },
   methods:{
     getStatistics(){
@@ -68,7 +77,7 @@ export default {
     },
     drawLine(){
         // 基于准备好的dom，初始化echarts实例
-        let myChart = echarts.init(document.getElementById('myChart'));
+        this.mychart = echarts.init(document.getElementById('myChart'));
         let data = this.statistics;
 
         let dateList = data.map(function (item) {
@@ -77,19 +86,20 @@ export default {
         let valueList = data.map(function (item) {
             return item.count;
         });
+        let colors = ['#5793f3', '#675bba','#d14a61', ];
         
         let option = {
-            title: {
-                left: 'center',
-                text: '本月用户登录次数'
-            },
-            visualMap: [{
-                show: false,
+            // color: colors,
+            // title: {
+            //     left: 'left',
+            //     text: '近30日用户登录次数'
+            // },
+            visualMap: {
+                show: true,
                 type: 'continuous',
-                seriesIndex: 0,
                 min: 0,
                 max: 400
-            }],
+            },
             tooltip: {
                 trigger: 'axis',
                 axisPointer: {
@@ -100,12 +110,15 @@ export default {
                 }
             },
             legend: {
-                    data:['访问量']
+                    data:['近30日用户登录次数']
             },
             
             xAxis: {
                 type: "category",
-                data: dateList
+                data: dateList,
+                axisTick: {
+                  alignWithLabel: true
+                }
             },
             yAxis: {
                 type: "value",
@@ -113,21 +126,23 @@ export default {
             },
             
             series: {
-                name: '访问次数',
-                type: 'line',
-                showSymbol: true,
-                data: valueList
+                name: '近30日用户登录次数',
+                type: 'bar',
+                data: valueList,
+                showSymbol: false,
+                smooth: true,
             }
         };
         // 使用刚指定的配置项和数据显示图表。
-        myChart.setOption(option);
+        this.mychart.setOption(option);
     }
   }
 };
 </script>
 <style scoped>
 .content {
-  background-color: #fff;
+  background-color: #f5f5f6;
+  /* background-color: #fff; */
   width: 100%;
   height: 100%;
   padding: 10px;
@@ -141,6 +156,9 @@ export default {
   font-size: 1.2rem;
   text-align: left;
   box-shadow: 3px 3px 5px #7f8183;
+  /* background-color: #1890ff; */
+  
+  
   /* width: 300px; */
   /* background-color: aquamarine */
 }

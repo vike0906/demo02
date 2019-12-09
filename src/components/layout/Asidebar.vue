@@ -27,16 +27,22 @@ export default {
   },
   methods:{
     getMenu(){
-      api.getMenu().then(response => {
+      let menu = JSON.parse(sessionStorage.getItem("menu"));
+      if(menu){
+        this.menu = menu;
+      }else{
+        api.getMenu().then(response => {
           if (response) {
             if (response.code == 0) {
               this.menu = response.content;
+              sessionStorage.setItem("menu", JSON.stringify(this.menu));
             }
           }
         })
         .catch(err => {
           console.log(err);
         });
+      }
     }
   },
   mounted(){
