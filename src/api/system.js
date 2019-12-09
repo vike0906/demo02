@@ -3,6 +3,8 @@ import qs from 'qs';
 
 //获取菜单
 export const getMenu = () =>{return request({url: '/system/menu', method: 'get'})}
+//获取访问统计信息
+export const getStatistics=()=>{return request({url: '/system/statistics',  method: 'get'})}
 
 //获取全部用户
 export const getUsers = params => {return request({url: '/system/users',  method: 'get', params: params})}
@@ -30,3 +32,4 @@ export const saveAction = params => {return request({url: '/system/save-action',
 export const deleteAction = params => {return request({url: '/system/delete-action',  method: 'delete', data: qs.stringify(params)})}
 //获取可选一级权限
 export const getActiveParentAction=()=>{return request({url: '/system/active-parent-action',  method: 'get'})}
+
