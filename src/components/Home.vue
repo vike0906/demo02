@@ -135,6 +135,7 @@ export default {
   bottom: 0;
   right: 0;
   left: 0;
+  
 }
 #home .ant-layout-content {
   background-color: #f5f5f6;
@@ -157,6 +158,7 @@ export default {
     position: absolute;
     top: 0;
     left: 0;
+    
     bottom: 0;
   }
 }

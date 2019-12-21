@@ -125,13 +125,22 @@ export default {
                 splitLine: {show: false}
             },
             
-            series: {
+            series: [
+            //   {
+            //     name: '近30日用户登录次数',
+            //     type: 'line',
+            //     data: valueList,
+            //     showSymbol: false,
+            //     smooth: true,
+            // },
+            {
                 name: '近30日用户登录次数',
                 type: 'bar',
                 data: valueList,
                 showSymbol: false,
                 smooth: true,
             }
+            ]
         };
         // 使用刚指定的配置项和数据显示图表。
         this.mychart.setOption(option);

@@ -31,6 +31,9 @@ export default new Router({
         path:'stock-focus',
         component:()=>import('@/components/stock/StockFocus')
       },{
+        path:'game',
+        component:()=>import('@/components/game/Game')
+      },{
         path:'system-user',
         component:()=>import('@/components/system/User')
       },{
