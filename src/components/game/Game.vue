@@ -1,265 +1,253 @@
 <template>
-  <div class="box">
-    <canvas class="canvas" ref="canvas" width="900" height="900" @click="chessClick"></canvas>
+  <div class="warpper">
+    <canvas id="gobang" class="gobang" width="900" height="900" @click="on_click">
+      您的浏览器不支持 HTML5 canvas
+      标签
+    </canvas>
+    <!-- onmousemove="on_mouse_move(event)" -->
   </div>
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        chess: {},
-        context: {},
-        chessBoard: [], // 记录是否走过
-        me: true,
-        count: 0, // 所有赢法数量
-        wins: [], // 赢法数组
-        myWin: [], // 我方赢法的统计数组
-        computerWin: [], // 计算机赢法的统计数组
-        over: false,
+export default {
+  data() {
+    return {
+      gobang: {},
+      cxt: {},
+      chessBoard: [],
+      isFirst: true
+    };
+  },
+  mounted() {
+    setTimeout(_ => {
+      this.init();
+    });
+  },
+  methods: {
+    // 初始化
+    init() {
+      this.gobang = document.getElementById("gobang");
+      this.cxt = this.gobang.getContext("2d");
+      this.fillArray();
+      this.drawChessBoard();
+    },
+
+    fillArray() {
+      let chessBoard = new Array(15);
+      for (let i = 0; i < 15; i++) {
+        chessBoard[i] = new Array(15);
+        for (let j = 0; j < 15; j++) {
+          chessBoard[i][j] = {
+            serNo: i + 1 + "" + (j + 1) + "",
+            offsetX: (i + 1) * 60 - 30,
+            offsetY: (j + 1) * 60 - 30,
+            status: 0
+          };
+        }
+      }
+      this.chessBoard = chessBoard;
+    },
+
+    drawChessBoard() {
+      let cxt = this.cxt;
+      this.gobang.height = this.gobang.height;
+      cxt.strokeStyle = "#ababab";
+      for (let i = 0; i < 15; i++) {
+        cxt.moveTo(30, i * 60 + 30);
+        cxt.lineTo(870, i * 60 + 30);
+        cxt.stroke();
+
+        cxt.moveTo(i * 60 + 30, 30);
+        cxt.lineTo(i * 60 + 30, 870);
+        cxt.stroke();
+      }
+      this.punctuation(this.chessBoard[3][3]);
+      this.punctuation(this.chessBoard[3][11]);
+      this.punctuation(this.chessBoard[7][7]);
+      this.punctuation(this.chessBoard[11][3]);
+      this.punctuation(this.chessBoard[11][11]);
+    },
+    on_click(e) {
+      const ox = e.offsetX;
+      const oy = e.offsetY;
+      const x = Math.floor(ox / 60);
+      const y = Math.floor(oy / 60);
+      let chess = this.chessBoard[x][y];
+      if (chess.status === 0) {
+        if (this.distance(ox, oy, chess)) {
+          return;
+        }
+        chess.status = 1;
+        this.onStep(chess.offsetX, chess.offsetY, this.isFirst);
+        let that = this;
+        setTimeout(function() {
+          if (that.isWin(x, y)) {
+            let msg = "白棋获胜";
+            if (that.isFirst) {
+              msg = "黑棋获胜";
+            }
+            // that.$message.info(message);
+            that.$notification.open({
+              message: msg,
+              description:
+                "五子连成一条直线即可获胜",
+              icon: <a-icon type="smile" style="color: #108ee9" />
+            });
+            that.fillArray();
+            that.drawChessBoard();
+          }
+        }, 200);
+
+        this.isFirst = this.isFirst == true ? false : true;
       }
     },
-    mounted () {
-      setTimeout(_ => {
-        this.init()
-      })
+    distance(ox, oy, point) {
+      let a = Math.abs(ox - point.offsetX);
+      let b = Math.abs(oy - point.offsetY);
+      return Math.pow(a, 2) + Math.pow(b, 2) > Math.pow(15, 2);
     },
-    methods: {
-      // 初始化
-      init () {
-        this.chess = this.$refs.canvas
-        this.context = this.chess.getContext("2d")
-        this.drawChessBoard()
-        this.fillArray()
-      },
-      // 填充数组
-      fillArray () {
-        // 是否走过
-        for (let i = 0; i < 15; i++) {
-          this.chessBoard[i] = []
-          for (let j = 0; j < 15; j++) {
-            this.chessBoard[i][j] = 0
-          }
-        }
-        // 赢法数组
-        for (let i = 0; i < 15; i++) {
-          this.wins[i] = []
-          for (let j = 0; j < 15; j++) {
-            this.wins[i][j] = []
-          }
-        }
-        // 横
-        for (let i = 0; i < 15; i++) {
-          for (let j = 0; j < 11; j++) {
-            for (let k = 0; k < 5; k++) {
-              this.wins[i][j+k][this.count] = true
-            }
-            this.count++
-          }
-        }
-        // 竖
-        for (let i = 0; i < 15; i++) {
-          for (let j = 0; j < 11; j++) {
-            for (let k = 0; k < 5; k++) {
-              this.wins[j+k][i][this.count] = true
-            }
-            this.count++
-          }
-        }
-        // 斜
-        for (let i = 0; i < 11; i++) {
-          for (let j = 0; j < 11; j++) {
-            for (let k = 0; k < 5; k++) {
-              this.wins[i+k][j+k][this.count] = true
-            }
-            this.count++
-          }
-        }
-        // 反斜
-        for (let i = 0; i < 11; i++) {
-          for (let j = 14; j > 3; j--) {
-            for (let k = 0; k < 5; k++) {
-              this.wins[i+k][j-k][this.count] = true
-            }
-            this.count++
-          }
-        }
-        // 赢法的统计数组
-        for (let i = 0; i < this.count; i++) {
-          this.myWin[i] = 0
-          this.computerWin[i] = 0
-        }
-        console.log(this.myWin);
-        console.log(this.wins);
-        console.log(this.computerWin);
-        console.log(this.count);
-      },
-      // 绘制棋盘
-      drawChessBoard () {
-        const { context } = this
-        context.strokeStyle = '#fff'
-        for (let i = 0; i < 15; i++) {
-          context.moveTo(30 + i * 60, 30)
-          context.lineTo(30 + i * 60, 870)
-          context.moveTo(30, 30 + i * 60)
-          context.lineTo(870, 30 + i * 60)
-        }
-        context.stroke()
-      },
-      // 落子实现
-      onStep (x, y, me) {
-        const { context } = this
-        context.beginPath()
-        context.arc(30 + x * 60, 30 + y * 60, 13, 0, 2 * Math.PI)
-        context.closePath()
-        const gradient = context.createRadialGradient(30 + x * 60 + 2, 30 + y * 60 - 2, 13, 30 + x * 60 + 2, 30 + y * 60 - 2, 0)
-        if (me) {
-          gradient.addColorStop(0, '#0a0a0a')
-          gradient.addColorStop(1, '#636766')
+    onStep(x, y, isFirst) {
+      let cxt = this.cxt;
+      cxt.beginPath();
+      cxt.arc(x, y, 15, 0, 2 * Math.PI);
+      cxt.closePath();
+      const gradient = cxt.createRadialGradient(
+        x + 2,
+        y - 2,
+        15,
+        x + 2,
+        y - 2,
+        2
+      );
+      if (isFirst) {
+        gradient.addColorStop(0, "#0a0a0a");
+        gradient.addColorStop(1, "#636766");
+      } else {
+        gradient.addColorStop(0, "#d1d1d1");
+        gradient.addColorStop(1, "#f9f9f9");
+      }
+      cxt.fillStyle = gradient;
+      cxt.fill();
+    },
+
+    isWin(x, y) {
+      if (this.cross(x, y) == 5) {
+        return true;
+      }
+      if (this.vertical(x, y) == 5) {
+        return true;
+      }
+      if (this.leftOblique(x, y) == 5) {
+        return true;
+      }
+      if (this.rightOblique(x, y) == 5) {
+        return true;
+      }
+      return false;
+    },
+
+    cross(x, y) {
+      let count = 1;
+      let chessBoard = this.chessBoard;
+      for (let i = 1; i < 5; i++) {
+        if (x - i >= 0 && chessBoard[x - i][y].status == 1) {
+          count++;
         } else {
-          gradient.addColorStop(0, '#d1d1d1')
-          gradient.addColorStop(1, '#f9f9f9')
-        }
-        context.fillStyle = gradient
-        context.fill()
-      },
-      // 我方落子
-      chessClick (e) {
-        if (this.over) {
-          return
-        }
-        if (!this.me) {
-          return
-        }
-        const ox = e.offsetX
-        const oy = e.offsetY
-        const x = Math.floor(ox/30)
-        const y = Math.floor(oy/30)
-
-        if (this.chessBoard[x][y] === 0) {
-          this.chessBoard[x][y] = 1
-          this.onStep(x, y, this.me)
-
-          // 统计赢法
-          for (let k = 0; k < this.count; k++) {
-            if (this.wins[x][y][k]) {
-              this.myWin[k]++
-              this.computerWin[k] = 6
-              if (this.myWin[k] === 5) {
-                alert('你赢了')
-                this.over = true
-              }
-            }
-          }
-          if (!this.over) {
-            this.me = !this.me
-            this.computerAI()
-          }
-        }
-      },
-      // 计算机落子
-      computerAI () {
-        const myScore = []
-        const computerScore = []
-        let max = 0 // 最大分数
-        let u = 0, v = 0 // 所在坐标
-
-        for (let i = 0; i < 15; i++) {
-          myScore[i] = []
-          computerScore[i] = []
-          for (let j = 0; j < 15; j++) {
-            myScore[i][j] = 0
-            computerScore[i][j] = 0
-          }
-        }
-        // 遍历棋盘
-        for (let i = 0; i < 15; i++) {
-          for (let j = 0; j < 15; j++) {
-            if (this.chessBoard[i][j] === 0) {
-              // 遍历所有赢法
-              for (let k = 0; k < this.count; k++) {
-                if (this.wins[i][j][k]) {
-                  // 我方
-                  if (this.myWin[k] === 1) {
-                    myScore[i][j] += 200
-                  } else if (this.myWin[k] === 2) {
-                    myScore[i][j] += 400
-                  } else if (this.myWin[k] === 3) {
-                    myScore[i][j] += 2000
-                  } else if (this.myWin[k] === 4) {
-                    myScore[i][j] += 10000
-                  }
-                  // 计算机
-                  if (this.computerWin[k] === 1) {
-                    computerScore[i][j] += 220
-                  } else if (this.computerWin[k] === 2) {
-                    computerScore[i][j] += 420
-                  } else if (this.computerWin[k] === 3) {
-                    computerScore[i][j] += 2100
-                  } else if (this.computerWin[k] === 4) {
-                    computerScore[i][j] += 20000
-                  }
-                }
-              }
-              // 比较分数
-              if (myScore[i][j] > max) {
-                max = myScore[i][j]
-                u = i
-                v = j
-              } else if (myScore[i][j] === max) {
-                if (computerScore[i][j] > computerScore[u][v]) {
-                  u = i
-                  v = j
-                }
-              }
-              if (computerScore[i][j] > max) {
-                max = computerScore[i][j]
-                u = i
-                v = j
-              } else if (computerScore[i][j] === max) {
-                if (myScore[i][j] > myScore[u][v]) {
-                  u = i
-                  v = j
-                }
-              }
-            }
-          }
-        }
-        this.onStep(u, v, false)
-        this.chessBoard[u][v] = 2
-        // 统计赢法
-        for (let k = 0; k < this.count; k++) {
-          if (this.wins[u][v][k]) {
-            this.computerWin[k]++
-            this.myWin[k] = 6
-            if (this.computerWin[k] === 5) {
-              alert('计算机赢了')
-              this.over = true
-            }
-          }
-        }
-        if (!this.over) {
-          this.me = !this.me
+          break;
         }
       }
+      for (let i = 1; i < 5; i++) {
+        if (x + i <= 14 && chessBoard[x + i][y].status == 1) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
     },
-    head () {
-      return {
-        title: '五子棋 | 娱乐',
-        meta: [
-          { hid: 'keywords', name: 'keywords', content: 'AI五子棋' },
-          { hid: 'description', name: 'description', content: 'AI五子棋' }
-        ]
+    vertical(x, y) {
+      let count = 1;
+      let chessBoard = this.chessBoard;
+      for (let i = 1; i < 5; i++) {
+        if (y - i >= 0 && chessBoard[x][y - i].status == 1) {
+          count++;
+        } else {
+          break;
+        }
       }
+      for (let i = 1; i < 5; i++) {
+        if (y + i <= 14 && chessBoard[x][y + i].status == 1) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
+    },
+    leftOblique(x, y) {
+      let count = 1;
+      let chessBoard = this.chessBoard;
+      for (let i = 1; i < 5; i++) {
+        if (x - i >= 0 && y - i >= 0 && chessBoard[x - i][y - i].status == 1) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      for (let i = 1; i < 5; i++) {
+        if (
+          x + i <= 14 &&
+          y + i <= 14 &&
+          chessBoard[x + 1][y + i].status == 1
+        ) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
+    },
+    rightOblique(x, y) {
+      let count = 1;
+      let chessBoard = this.chessBoard;
+      for (let i = 1; i < 5; i++) {
+        if (x - i >= 0 && y + i <= 14 && chessBoard[x - i][y + i].status == 1) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      for (let i = 1; i < 5; i++) {
+        if (x + i <= 14 && y - i >= 0 && chessBoard[x + 1][y - i].status == 1) {
+          count++;
+        } else {
+          break;
+        }
+      }
+      return count;
+    },
+    punctuation(point) {
+      let cxt = this.cxt;
+      cxt.fillStyle = "#000";
+      cxt.beginPath();
+      cxt.arc(point.offsetX, point.offsetY, 3, 0, 2 * Math.PI);
+      cxt.closePath();
+      cxt.fill();
     }
   }
+};
 </script>
 
 <style scoped>
-  .box .canvas{
-      border: 1px solid rgb(185, 185, 185);
-      margin: 20px auto;
-      background: rgb(199, 199, 199);
-      box-shadow: -2px 0 2px #efefef, 5px 5px 5px #b9b9b9;
-  }
+.warpper {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.gobang {
+  background-color: #f4f6f7;
+  border: 1px solid #827777;
+  border-radius: 5px;
+  box-shadow: -2px 0 2px #efefef, 5px 5px 5px #b9b9b9;
+}
 </style>
