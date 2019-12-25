@@ -71,7 +71,7 @@ export default {
       this.gameModelShow = false;
       this.chessBoardShow = true;
       //建立soket连接
-      this.createWebSocekt({infoType:"1",content:"1"});
+      this.createWebSocekt({type:"1",content:"1"});
       
       //等待匹配对手
 
@@ -118,7 +118,7 @@ export default {
           });
           return;
         }
-        this.send({infoType:3, content: { x: x, y: y }});
+        this.send({type: 6, x: x, y: y});
         chess.status = 1;
         this.onStep(chess.offsetX, chess.offsetY, this.isFirst);
         if (this.isWin(x, y)) {
@@ -235,17 +235,12 @@ export default {
       switch (message.type){
         case 1:
           //连接成功，正在匹配对手
-          // this.$info({
-          //   title: "正在匹配",
-          //   content: "系统正在为您匹配玩家，请耐心等待",
-          //   icon: 'loading',
-          //   okButtonProps:{ props: {disabled: true, display: 'none'}},
-          //   keyboard: false,
-          // });
           this.matchShow = true;
           break;
         case 2:
           //匹配成功，开始对战
+          this.matchShow = false;
+          this.isFirst = message.isFirst==1?true:false;
           break;
         case 3:
           //对方退出游戏
@@ -258,6 +253,9 @@ export default {
           break;
         case 6:
           //对方走棋
+          let chess = this.chessBoard[message.x][message.y];
+          chess.status = 1;
+          this.onStep(chess.offsetX, chess.offsetY, this.isFirst);
           break;
       }
     },
