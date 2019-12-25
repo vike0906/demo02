@@ -18,9 +18,18 @@
         您的浏览器不支持 HTML5 canvas
         标签
       </canvas>
-      <a-modal  v-model="matchShow" :footer="null" :afterClose="cancelQueue" :keyboard=false :maskClosable=false :centered=true :width="350">
+      <a-modal  v-model="matchShow" :closable=false  :keyboard=false :maskClosable=false :centered=true :width="350">
       <span slot="title"><a-icon type="loading" />&nbsp;&nbsp;正在匹配</span>
       <p>系统正在为您匹配玩家，请耐心等待</p>
+      <template slot="footer">
+        <a-button key="取消排队" type="danger" @click="cancelQueue">
+          取消排队
+        </a-button>
+      </template>
+      </a-modal>
+      <a-modal  v-model="requestCancel" :footer=null :closable=false  :keyboard=false :maskClosable=false :centered=true :width="350">
+      <span slot="title"><a-icon type="loading" />&nbsp;&nbsp;等待对方同意</span>
+      <p>正在等待对手同意，请耐心等待</p>
       </a-modal>
     </div>
     <!-- onmousemove="on_mouse_move(event)" -->
@@ -36,11 +45,13 @@ export default {
       gobang: {},
       cxt: {},
       chessBoard: [],
-      isFirst: true,
+      isFirst: false,
+      isChess: false,
       isEnd: false,
-      path: "ws://localhost:8085/webSocket/chess/",
+      path: "/webSocket/chess/",
       socket: null,
       matchShow: false,
+      requestCancel:false,
     };
   },
   mounted() {
@@ -72,32 +83,35 @@ export default {
       this.chessBoardShow = true;
       //建立soket连接
       this.createWebSocekt({type:"1",content:"1"});
-      
-      //等待匹配对手
-
-      //先后手信息
     },
     exitGame() {
+      this.send({type:3})
       this.gameModelShow = true;
       this.chessBoardShow = false;
       this.endGame();
       this.socket.close();
     },
     refreshGame() {
-      this.endGame();
+      // this.endGame();
+      this.requestCancel = true;
+      this.send({type:4,content:1});
     },
     giveUp() {
-      //pass
+      this.send({type:5});
+      this.isEnd = true;
     },
     endGame() {
       this.fillArray();
       this.drawChessBoard();
       this.isEnd = false;
-      this.isFirst = true;
+      this.isChess = false,
+      this.isFirst = false;
     },
     cancelQueue(){
       //取消排队
-      this.send("quxiao");
+
+      this.send({type:2});
+      this.matchShow = false;
       this.exitGame();
     },
     on_click(e) {
@@ -118,27 +132,122 @@ export default {
           });
           return;
         }
+        if (this.isChess == false) {
+          this.$message.info("等待对方走棋");
+          return;
+        }
+        
         this.send({type: 6, x: x, y: y});
         chess.status = 1;
+        this.isChess = false;
         this.onStep(chess.offsetX, chess.offsetY, this.isFirst);
         if (this.isWin(x, y)) {
           this.isEnd = true;
           let msg = "白棋获胜";
-          if (this.isFirst) {
+          if (this.isFirst==true) {
             msg = "黑棋获胜";
           }
-          // that.$message.info(message);
           this.$notification.open({
             message: msg,
             description: "五子连成一条直线即可获胜",
             icon: <a-icon type="smile" style="color: #108ee9" />
           });
+          this.send({type:7})
         }
-
-        this.isFirst = this.isFirst == true ? false : true;
       }
     },
+    getMessage: function(msg) {
+      console.log(msg.data);
+      let message = JSON.parse(msg.data);
+      console.log(message);
+      let that = this;
+      switch (message.type){
+        case 1:
+          //连接成功，正在匹配对手
+          this.matchShow = true;
+          break;
+        case 2:
+          //匹配成功，开始对战
+          this.matchShow = false;
+          //确认先后手，打开走棋开关
+          if(message.isFirst==1){
+            this.isFirst = true;
+            this.isChess = true;
+          }
+          this.$message.success("游戏开始");
+          break;
+        case 3:
+          //对方退出游戏
+          this.$error({
+                title: '对方退出',
+                content: '对方强行退出了对局，本局游戏将结束',
+                okText: '确定',
+                onOk(){
+                  that.exitGame();
+                }
+              });
+          
+          break;
+        case 4:
+          if(message.content==1){
+            //对方请求重新开局
+            this.$confirm({
+                title: '重新开局',
+                content: '对方请求重新开局',
+                okText: '同意',
+                cancelText: '拒绝',
+                onOk(){
+                  that.endGame();
+                  that.isEnd = false;
+                  that.send({type:4,content:2});
+                },
+                onCancel(){
+                  that.send({type:4,content:3});
+                },
+              });
+          }else if(message.content==2){
+            //对方同意重新开局
+            this.requestCancel = false;
+            this.endGame();
+            this.isEnd = false;
+            this.isFirst = true;
+            this.isChess = true;
+            this.$message.info("对方同意重新开局，游戏开始");
+          }else if(message.content==3){
+            //对方拒绝重新开局
+            this.requestCancel = false;
+            this.$message.error("对方拒绝重新开局");
+          }
+          break;
+        case 5:
+          //对方认输
+          this.$success({
+                title: '对方认输',
+                content: '对方已认输，你赢得了本局游戏',
+                okText: '确定',
+              });
+          this.isEnd = true;
+          break;
+        case 6:
+          //对方走棋
+          let chess = this.chessBoard[message.x][message.y];
+          chess.status = 2;
+          this.onStep(chess.offsetX, chess.offsetY, this.isFirst==false);
+          this.isChess = true;
+          break;
+        case 7:
+          //对方获胜
+          this.isEnd = true;
+          this.$notification.open({
+            message: "对方获胜",
+            description: "五子连成一条直线即可获胜",
+            // icon: <a-icon type="smile" style="color: #108ee9" />,
+            // icon: <a-icon type="frown" style="color: red" />
+          });
+          break;
 
+      }
+    },
     fillArray() {
       let chessBoard = new Array(15);
       for (let i = 0; i < 15; i++) {
@@ -208,8 +317,8 @@ export default {
         alert("您的浏览器不支持socket");
       } else {
         // 实例化socket
-        let webSocketPath =
-          this.path + JSON.parse(sessionStorage.getItem("user")).token;
+        let baseURL = process.env.WS_ROOT;
+        let webSocketPath =baseURL+ this.path + JSON.parse(sessionStorage.getItem("user")).token;
         this.socket = new WebSocket(webSocketPath);
         // 监听socket连接
         this.socket.onopen = this.open(initMessage);
@@ -228,37 +337,7 @@ export default {
       let that = this;
       setTimeout(()=>that.send(initMessage),200);
     },
-    getMessage: function(msg) {
-      console.log(msg.data);
-      let message = JSON.parse(msg.data);
-      console.log(message);
-      switch (message.type){
-        case 1:
-          //连接成功，正在匹配对手
-          this.matchShow = true;
-          break;
-        case 2:
-          //匹配成功，开始对战
-          this.matchShow = false;
-          this.isFirst = message.isFirst==1?true:false;
-          break;
-        case 3:
-          //对方退出游戏
-          break;
-        case 4:
-          //对方请求重新开局
-          break;
-        case 5:
-          //对方认输
-          break;
-        case 6:
-          //对方走棋
-          let chess = this.chessBoard[message.x][message.y];
-          chess.status = 1;
-          this.onStep(chess.offsetX, chess.offsetY, this.isFirst);
-          break;
-      }
-    },
+    
     error: function() {
       console.log("连接错误");
     },
@@ -374,7 +453,9 @@ export default {
     }
   },
   destroyed() {
-    this.socket.close();
+    if(this.socket!=null){
+      this.socket.close();
+    }
   }
 };
 </script>
